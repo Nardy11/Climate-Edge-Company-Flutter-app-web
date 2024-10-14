@@ -1,15 +1,12 @@
 import 'package:climate_edge/Front-End/Components/emission_selector.dart';
+import 'package:climate_edge/Front-End/Components/page_header.dart';
 import 'package:climate_edge/Front-End/Pages/DataProviderPages/data_table_page.dart';
 import 'package:climate_edge/Front-End/log_in_page.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
 class DataProviderHomePage extends StatefulWidget {
-  final String emissionType;
-
-  const DataProviderHomePage({Key? key, required this.emissionType})
-      : super(key: key);
-
+  const DataProviderHomePage(BuildContext context);
   @override
   _DataProviderHomePageState createState() => _DataProviderHomePageState();
 }
@@ -37,66 +34,12 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
   String? selectedDate; // Track the selected date
   String? uploadedFileName; // Track the uploaded file name
 
- @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF0E3D25),
-        title: Row(
-          children: [
-            Image.asset(
-              "assets/images/company's_logo.png",
-              height: 40,
-              width: 40,
-            ),
-            const SizedBox(width: 10),
-            const Text(
-              "CLIMATE EDGE",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const Spacer(),
-            IconButton(
-              icon: const Icon(Icons.notifications, color: Colors.white),
-              onPressed: () {},
-            ),
-            PopupMenuButton(
-              icon: const Icon(Icons.person, color: Colors.white),
-              itemBuilder: (BuildContext context) => [
-               const PopupMenuItem(
-                  value: 'logout',
-                  child: Row(
-                    children: [
-                       Icon(
-                        Icons.logout, // Use the logout icon
-                        color: Colors.red,
-                      ),
-                       SizedBox(width: 10), // Spacing between icon and text
-                      Text(
-                        'LOGOUT',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-              onSelected: (value) {
-                if (value == 'logout') {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginPage()),
-                  );
-                }
-              },
-            ),
-          ],
-        ),
+      appBar: const PreferredSize(
+        preferredSize: Size.fromHeight(60.0), // Adjust the height if needed
+        child: PageHeader(),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -448,9 +391,16 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
       context,
       MaterialPageRoute(
         builder: (context) => DataTablePage(
-          userid: null,
-          emissionname: selectedItem, // Pass selected emission name
-        ),
+  emissionName: '$selectedItem',
+  userId: 'User123',
+  rowData: [
+    ['200', 'Location 1', '2024-10-14', '100', 'Accepted'],
+    ['150', 'Location 2', '2024-10-12', '75', 'Rejected'],
+    ['10', 'Location 3', '2024-1-2', '750', 'Pending'],
+
+    // Add more rows
+  ],
+),
       ),
     );
   }

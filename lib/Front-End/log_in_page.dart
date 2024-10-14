@@ -1,3 +1,4 @@
+import 'package:climate_edge/Front-End/Pages/DataProviderPages/home_page.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatelessWidget {
@@ -8,7 +9,9 @@ class LoginPage extends StatelessWidget {
     // Get screen size information
     final size = MediaQuery.of(context).size;
     final isSmallScreen = size.width < 600;
-    final logoSize = isSmallScreen ? size.width * 0.4 : size.width * 0.2; // Logo scales with screen width
+    final logoSize = isSmallScreen
+        ? size.width * 0.4
+        : size.width * 0.2; // Logo scales with screen width
 
     return Scaffold(
       body: Stack(
@@ -104,20 +107,24 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-
                   // Log In Button
                   SizedBox(
                     width: isSmallScreen ? size.width * 0.85 : size.width * 0.5,
                     child: ElevatedButton(
                       onPressed: () {
-                        // Handle login
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    DataProviderHomePage(context)));
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 50, vertical: 15),
                       ),
                       child: const Text(
                         'Log In',

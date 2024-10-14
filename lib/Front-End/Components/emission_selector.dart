@@ -7,6 +7,8 @@ class EmissionSelector extends StatelessWidget {
   final Color textColor; // Text color
   final Color borderColor; // Border color
   final List<String> itemLists;
+  final String hintText;
+
   List<String> k=[];
    EmissionSelector({
     Key? key,
@@ -16,6 +18,7 @@ class EmissionSelector extends StatelessWidget {
     this.textColor = Colors.black, // Default text color
     this.borderColor = Colors.black, // Default border color
     this.itemLists = const [], // Default to an empty list
+    this.hintText='Choose an emission type',
   }) : super(key: key);
 
   @override
@@ -36,7 +39,7 @@ class EmissionSelector extends StatelessWidget {
         ),
         value: selectedItem,
         hint: Text(
-          "Choose an emission type",
+          hintText,
           style: TextStyle(color: textColor), // Set hint text color
         ),
         items: itemLists.map((item) {
