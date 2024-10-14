@@ -119,7 +119,7 @@ Widget _buildDataCard(BuildContext context, int index, double screenWidth) {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8.0),
       ),
-      color: const Color(0xFF0E3929), // Dark green background for the data cards
+      color: const Color.fromRGBO(14, 57, 41, 1), // Dark green background for the data cards
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(
@@ -148,9 +148,8 @@ Widget _buildDataCard(BuildContext context, int index, double screenWidth) {
             const Divider(color: Color.fromRGBO(255, 255, 255, 48)), // A separator
             // View Attachment Button
             Align(
-              alignment: Alignment.center,
+              alignment: Alignment.centerLeft,
               child: SizedBox(
-                width: screenWidth * 0.8, // Set the button width to 90% of the screen width
                 child: TextButton(
                   onPressed: () {
                     // Handle View Attachment action
