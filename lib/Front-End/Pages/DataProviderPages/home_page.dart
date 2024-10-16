@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:climate_edge/Back-End/Controllers/data_point_controller.dart';
 import 'package:climate_edge/Back-End/Models/data_point_model.dart';
 import 'package:climate_edge/Front-End/Components/emission_selector.dart';
 import 'package:climate_edge/Front-End/Components/page_header.dart';
@@ -360,23 +364,48 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                           child: Text(selectedDate ?? 'Select Date'),
                         ),
                         const SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () async {
-                            // File Picker logic
-                            FilePickerResult? result =
-                                await FilePicker.platform.pickFiles();
-                            if (result != null) {
-                              setState(() {
-                                uploadedFileName = result.files.single.name;
-                              });
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color.fromARGB(255, 255, 255, 255),
-                          ),
-                          child: Text(uploadedFileName ?? 'Upload File'),
-                        ),
+                       ElevatedButton(
+  onPressed: () async {
+    // File Picker logic to select any file
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.any, // Allow any file type
+    );
+
+    if (result != null) {
+      String fileName = result.files.single.name;
+      Uint8List? fileData = result.files.single.bytes;
+
+      if (fileData != null) {
+        // Upload the picked file to Firebase Storage
+        String? uploadedFileUrl = await uploadFile(fileName, fileData);
+        if (uploadedFileUrl != null) {
+          // Successfully uploaded, save the download URL
+          setState(() {
+            uploadedFileName = uploadedFileUrl; // Assign the URL to fileAttachment
+          });
+        }
+      } else {
+        // If bytes are null, read the file from the file path
+        String? path = result.files.single.path;
+        if (path != null) {
+          File file = File(path);
+          Uint8List fileBytes = await file.readAsBytes();
+          String? uploadedFileUrl = await uploadFile(fileName, fileBytes);
+          if (uploadedFileUrl != null) {
+            setState(() {
+              uploadedFileName = uploadedFileUrl; // Assign the URL to fileAttachment
+            });
+          }
+        }
+      }
+    }
+  },
+  style: ElevatedButton.styleFrom(
+    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+  ),
+  child: Text(uploadedFileName ?? 'Upload File'),
+),
+
                         const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment
@@ -390,7 +419,7 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                                   emissionSource: selectedEmission1,
                                   location: location,
                                   date: selectedDate.toString(),
-                                  fileAttachment: 'not done yet',
+                                  fileAttachment: uploadedFileName,
                                   status: "Pending",
                                   emissionAmount: chargedAmount +
                                       consumptionAmount +

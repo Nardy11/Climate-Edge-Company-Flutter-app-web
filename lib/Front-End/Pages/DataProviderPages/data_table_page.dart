@@ -3,16 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:climate_edge/Front-End/Components/emission_selector.dart';
 import 'package:climate_edge/Front-End/Components/page_header.dart';
 import 'package:climate_edge/Front-End/Components/side_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DataTablePage extends StatefulWidget {
   final String emissionName;
   final String userId;
 
-  const DataTablePage({
-    super.key,
-    required this.emissionName,
-    required this.userId
-  });
+  const DataTablePage(
+      {super.key, required this.emissionName, required this.userId});
 
   @override
   State<DataTablePage> createState() => _DataTablePageState();
@@ -40,7 +38,8 @@ class _DataTablePageState extends State<DataTablePage> {
   Future<void> _fetchData() async {
     try {
       // Fetch the data using the getEmissionCardsBySource function
-      List<List<String>> data = await getEmissionCardsBySource(widget.emissionName);
+      List<List<String>> data =
+          await getEmissionCardsBySource(widget.emissionName);
 
       setState(() {
         rowData = data;
@@ -57,7 +56,7 @@ class _DataTablePageState extends State<DataTablePage> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    
+
     return Scaffold(
       appBar: const PreferredSize(
         preferredSize: Size.fromHeight(60.0),
@@ -65,7 +64,9 @@ class _DataTablePageState extends State<DataTablePage> {
       ),
       drawer: const SideBarMenu(),
       body: isLoading
-          ? Center(child: CircularProgressIndicator()) // Show a loader while data is being fetched
+          ? Center(
+              child:
+                  CircularProgressIndicator()) // Show a loader while data is being fetched
           : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -162,11 +163,27 @@ class _DataTablePageState extends State<DataTablePage> {
                 alignment: Alignment.centerLeft,
                 child: SizedBox(
                   child: TextButton(
-                    onPressed: () {
-                      // Handle View Attachment action
+                    onPressed: () async {
+                      // Get the file URL from rowData[index][6]
+                      String? fileUrl = rowData[index][6];
+
+                      if (fileUrl != null && fileUrl.isNotEmpty) {
+                        // Use the url_launcher package to open the file URL in the browser
+                        if (await canLaunch(fileUrl)) {
+                          await launch(fileUrl);
+                        } else {
+                          // Handle the case where the file URL cannot be opened
+                          print('Could not launch file URL');
+                        }
+                      } else {
+                        // Handle the case where no file was uploaded
+                        print('No file to view');
+                      }
                     },
-                    child: const Text('View Attachment',
-                        style: TextStyle(color: Color.fromRGBO(14, 57, 41, 1))),
+                    child: const Text(
+                      'View Attachment',
+                      style: TextStyle(color: Color.fromRGBO(14, 57, 41, 1)),
+                    ),
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all(
                         Color.fromRGBO(255, 255, 255, 48),

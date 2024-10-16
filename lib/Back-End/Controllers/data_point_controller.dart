@@ -1,6 +1,7 @@
 import 'package:climate_edge/Back-End/Models/data_point_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'dart:io'; // For Platform
@@ -97,4 +98,24 @@ Future<List<List<String>>> getEmissionCardsBySource(String emissionSource) async
   }
 
   return rowData;
+}Future<String> uploadFile(String fileName, Uint8List fileData) async {
+  try {
+    Reference ref = FirebaseStorage.instance.ref().child('uploads/$fileName');
+
+    // Upload file to Firebase Storage
+    UploadTask uploadTask = ref.putData(fileData);
+    TaskSnapshot snapshot = await uploadTask;
+
+    // Check if the upload was successful
+    if (snapshot.state == TaskState.success) {
+      // Get download URL after successful upload
+      String downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
+    } else {
+      throw Exception('Upload failed');
+    }
+  } catch (e) {
+    print('File upload failed: $e');
+    throw Exception('Failed to upload file');
+  }
 }
