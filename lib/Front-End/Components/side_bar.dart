@@ -46,7 +46,7 @@ class SideBarMenu extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => DataTablePage(
                         emissionName: 'Purchased Electricity',
-                        userId: 'User123', emissionType: '',
+                        userId: 'User123',
                       ),
                     ),
                   );}),
@@ -58,7 +58,7 @@ class SideBarMenu extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => DataTablePage(
                         emissionName: 'Stationary Fuel',
-                        userId: 'User123', emissionType: '',
+                        userId: 'User123',
                       ),
                     ),
                   );}),
@@ -68,7 +68,7 @@ class SideBarMenu extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => DataTablePage(
                         emissionName: 'Refrigerants',
-                        userId: 'User123', emissionType: '',
+                        userId: 'User123',
                       ),
                     ),
                   );}),
@@ -78,7 +78,7 @@ class SideBarMenu extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => DataTablePage(
                         emissionName: 'Mobile Fuel',
-                        userId: 'User123', emissionType: '',
+                        userId: 'User123',
                       ),
                     ),
                   );}),
@@ -89,7 +89,7 @@ class SideBarMenu extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => DataTablePage(
                         emissionName: 'Fertilizers',
-                        userId: 'User123', emissionType: '',
+                        userId: 'User123',
                       ),
                     ),
                   );}),

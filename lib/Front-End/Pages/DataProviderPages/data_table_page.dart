@@ -11,7 +11,7 @@ class DataTablePage extends StatefulWidget {
   const DataTablePage({
     super.key,
     required this.emissionName,
-    required this.userId, required String emissionType,
+    required this.userId
   });
 
   @override

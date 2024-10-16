@@ -23,7 +23,8 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
   String? stationaryFuelType; // Track the selected emission
   String? refrigerantsType; // Track the selected emission in the dialog
   String? mobileFuelType; // Track the selected emission
-  String? fertilizersType; // Track the selected emission in the dialog
+  String? fertilizersType; // Track the selected emission in the
+
   List<String> itemList = [
     'Purchased Electricity',
     'Stationary Fuel',
@@ -213,7 +214,7 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                           ),
                           const SizedBox(height: 10),
                           _buildTextField(context, "Enter Fuel Amount",
-                              suffix: "kg", onChanged: (value) {
+                              onChanged: (value) {
                             fuelAmount = double.parse(value);
                           }),
                         ] else if (newItem1Saved ==
@@ -228,7 +229,7 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                           ),
                           const SizedBox(height: 10),
                           _buildTextField(context, "Enter Consumption Amount",
-                              suffix: "kg", onChanged: (value) {
+                              onChanged: (value) {
                             consumptionAmount = double.parse(value);
                           }),
                         ] else if (newItem1Saved == 'Mobile Fuel') ...[
@@ -286,7 +287,7 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                           ),
                           const SizedBox(height: 10),
                           _buildTextField(context, "Enter Charged Amount",
-                              suffix: "kg", onChanged: (value) {
+                              onChanged: (value) {
                             chargedAmount = double.parse(value);
                           }),
                         ] else if (newItem1Saved == 'Fertilizers') ...[
@@ -322,7 +323,7 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                           ),
                           const SizedBox(height: 10),
                           _buildTextField(context, "Enter Fertilizer Amount",
-                              suffix: "kg", onChanged: (value) {
+                              onChanged: (value) {
                             FertilizerAmount = double.parse(value);
                           }),
                         ],
@@ -348,7 +349,7 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                             if (pickedDate != null) {
                               setState(() {
                                 selectedDate =
-                                    "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+                                    "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
                               });
                             }
                           },
@@ -395,7 +396,16 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                                       consumptionAmount +
                                       fuelAmount +
                                       FertilizerAmount,
-                                  emissionCalculated: 10,
+                                  emissionCalculated: onEmissionTypeSelected(
+                                      selectedEmission1!,
+                                      ((stationaryFuelType ?? '') +
+                                          (refrigerantsType ?? '') +
+                                          (fertilizersType ?? '') +
+                                          (mobileFuelType ?? '')),
+                                      (chargedAmount +
+                                          consumptionAmount +
+                                          fuelAmount +
+                                          FertilizerAmount)),
                                   emissionType: (stationaryFuelType ?? '') +
                                       (refrigerantsType ?? '') +
                                       (fertilizersType ?? '') +
@@ -479,10 +489,129 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
           builder: (context) => DataTablePage(
             emissionName: selectedEmission,
             userId: widget.userId,
-            emissionType: selectedEmission,
           ),
         ),
       );
     }
+  }
+
+  String getUnit(String emissionType, int subTypeId) {
+    if (emissionType == itemList[0]) {
+      return 'kWh';
+    } else if (emissionType == 'Stationary Fuel') {
+      if (subTypeId == 1) {
+        // Coal Coke
+        return 'kg';
+      } else if (subTypeId == 4) {
+        // Natural Gas
+        return 'm3';
+      } else {
+        return 'L'; // Default for other fuel types
+      }
+    } else if (emissionType == 'Mobile Fuel') {
+      return 'L';
+    } else if (emissionType == 'Refrigerant') {
+      return 'kg';
+    } else if (emissionType == 'Fertilizer') {
+      return 'kg';
+    } else {
+      return '';
+    }
+  }
+
+  double getEmissionFactor(String emissionType, int subTypeId) {
+    if (emissionType == 'Purchased Electricity') {
+      return 0.0003767; // Emission factor from the image for Electricity
+    }
+    if (emissionType == 'Stationary Fuel') {
+      if (subTypeId == 1) {
+        // Coal Coke
+        return 0.00203289525;
+      } else if (subTypeId == 2) {
+        // Diesel
+        return 0.002709009025356;
+      } else if (subTypeId == 3) {
+        // Motor Gasoline
+        return 0.0022874570865564;
+      } else if (subTypeId == 4) {
+        // Natural Gas
+        return 0.00181355985024;
+      } else if (subTypeId == 5) {
+        // Kerosene
+        return 0.0028532109063744;
+      }
+    }
+    if (emissionType == 'Mobile Fuel') {
+      if (subTypeId == 1 || subTypeId == 2) {
+        // CNG Light-duty Vehicles
+        return 1.9267e-06;
+      } else if (subTypeId == 2) {
+        // CNG Medium- and Heavy-duty Vehicles
+        return 1.9267e-06;
+      } else if (subTypeId == 3) {
+        // Diesel Light-duty Trucks
+        return 0.0027428098819836;
+      } else if (subTypeId == 4) {
+        // Gasoline Buses
+        return 0.002340202663689;
+      } else if (subTypeId == 5) {
+        // Gasoline Passenger Cars
+        return 0.002340202663689;
+      }
+    }
+    if (emissionType == 'Refrigerants') {
+      if (subTypeId == 1) {
+        // HFC134a (R-134a)
+        return 1.3;
+      } else if (subTypeId == 2) {
+        // HFC22 (R-22)
+        return 1.76;
+      } else if (subTypeId == 3) {
+        // HFC23 (R-23)
+        return 12.4;
+      } else if (subTypeId == 4) {
+        // HFC410A
+        return 1.9235;
+      }
+    }
+    if (emissionType == 'Fertilizers') {
+      if (subTypeId == 1) {
+        // Nitrate
+        return 0.00429;
+      } else if (subTypeId == 2) {
+        // Urea
+        return 0.00073;
+      }
+    }
+    return 0.0; // Default if no match
+  }
+
+  double onEmissionTypeSelected(
+      String emissionSource, String emissionType, double amount) {
+    double emissionFactor = 0;
+    switch (emissionSource) {
+      case 'Fertilizers':
+        emissionFactor = getEmissionFactor(
+            emissionSource, fertilizersList.indexOf(emissionType) + 1);
+        break;
+      case 'Refrigerants':
+        emissionFactor = getEmissionFactor(
+            emissionSource, refrigerantsList.indexOf(emissionType) + 1);
+        break;
+      case 'Mobile Fuel':
+        emissionFactor = getEmissionFactor(
+            emissionSource, mobileFuelList.indexOf(emissionType) + 1);
+        break;
+
+      case 'Stationary Fuel':
+        emissionFactor = getEmissionFactor(
+            emissionSource, stationaryFuelList.indexOf(emissionType) + 1);
+        break;
+      case 'Purchased Electricity':
+        emissionFactor = getEmissionFactor(emissionSource, 1);
+        break;
+    }
+
+    return amount * emissionFactor;
   }
 }
