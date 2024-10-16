@@ -1,12 +1,10 @@
-import 'package:climate_edge/Back-End/Controllers/data_point_controller.dart';
 import 'package:climate_edge/Back-End/Models/data_point_model.dart';
 import 'package:climate_edge/Front-End/Components/emission_selector.dart';
 import 'package:climate_edge/Front-End/Components/page_header.dart';
 import 'package:climate_edge/Front-End/Pages/DataProviderPages/data_table_page.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
 
 class DataProviderHomePage extends StatefulWidget {
   final String userId;
@@ -33,11 +31,28 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
     'Mobile Fuel',
     'Fertilizers'
   ];
-  List<String> stationaryFuelList = [];
-  List<String> refrigerantsList = [];
-  List<String> mobileFuelList = [];
-  List<String> fertilizersList = [];
-  late String selectedDate; // Track the selected date
+  List<String> stationaryFuelList = [
+    "Coal Coke",
+    "Diesel",
+    "Motor Gasoline",
+    "Natural Gas",
+    "Refinery Oil"
+  ];
+  List<String> refrigerantsList = [
+    "HFC-134 (R-134)",
+    "HFC-22 (R-22)",
+    "HFC-23 (R-23)",
+    "R-410A"
+  ];
+  List<String> mobileFuelList = [
+    "CNG Light-duty Vehicles"
+        "CNG Medium- and Heavy-duty Vehicles",
+    "Diesel Light-duty Trucks",
+    "Gasoline Bus",
+    "Gasoline Passenger Cars",
+  ];
+  List<String> fertilizersList = ["Nitrate", "Urea"];
+  String? selectedDate; // Track the selected date
   String? uploadedFileName; // Track the uploaded file name
 
   @override
@@ -91,9 +106,10 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
 
   void _showEmissionPopup(BuildContext context) {
     String location = '';
-    String fuelAmount = '';
-    String consumptionAmount = '';
-    String chargedAmount = '';
+    double fuelAmount = 0;
+    double consumptionAmount = 0;
+    double chargedAmount = 0;
+    double FertilizerAmount = 0;
 
     showDialog(
       context: context,
@@ -198,7 +214,7 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                           const SizedBox(height: 10),
                           _buildTextField(context, "Enter Fuel Amount",
                               suffix: "kg", onChanged: (value) {
-                            fuelAmount = value;
+                            fuelAmount = double.parse(value);
                           }),
                         ] else if (newItem1Saved ==
                             'Purchased Electricity') ...[
@@ -213,7 +229,7 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                           const SizedBox(height: 10),
                           _buildTextField(context, "Enter Consumption Amount",
                               suffix: "kg", onChanged: (value) {
-                            consumptionAmount = value;
+                            consumptionAmount = double.parse(value);
                           }),
                         ] else if (newItem1Saved == 'Mobile Fuel') ...[
                           const Text(
@@ -271,7 +287,7 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                           const SizedBox(height: 10),
                           _buildTextField(context, "Enter Charged Amount",
                               suffix: "kg", onChanged: (value) {
-                            chargedAmount = value;
+                            chargedAmount = double.parse(value);
                           }),
                         ] else if (newItem1Saved == 'Fertilizers') ...[
                           const Text(
@@ -295,6 +311,20 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                               });
                             },
                           ),
+                          const SizedBox(height: 10),
+                          const Text(
+                            "Fertilizer Amount",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          _buildTextField(context, "Enter Fertilizer Amount",
+                              suffix: "kg", onChanged: (value) {
+                            FertilizerAmount = double.parse(value);
+                          }),
                         ],
                         const SizedBox(height: 20),
                         const Text(
@@ -354,11 +384,25 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                             ElevatedButton(
                               onPressed: () {
                                 // Call createEmissionCard with the gathered data
-                                Datapoint datapoint=new Datapoint(date:selectedDate ,emissionAmount:double.parse(consumptionAmount),emissionSource: newItem1Saved,id: '',location: location,status: "Pending",emissionCalculated: 0,fileAttachment: uploadedFileName );
-
-                                createEmissionCard(
-
+                                Datapoint dp = new Datapoint(
+                                  id: "",
+                                  emissionSource: selectedEmission1,
+                                  location: location,
+                                  date: selectedDate.toString(),
+                                  fileAttachment: 'not done yet',
+                                  status: "Pending",
+                                  emissionAmount: chargedAmount +
+                                      consumptionAmount +
+                                      fuelAmount +
+                                      FertilizerAmount,
+                                  emissionCalculated: 10,
+                                  emissionType: (stationaryFuelType ?? '') +
+                                      (refrigerantsType ?? '') +
+                                      (fertilizersType ?? '') +
+                                      (mobileFuelType ?? ''),
                                 );
+                                createEmissionCard(dp);
+
                                 Navigator.pop(context);
                               },
                               child: const Text("Save"),
@@ -385,22 +429,16 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
       },
     );
   }
-  
+
   // Function to create an emission card and save to Firebase
-  Future<void> createEmissionCard(
-   
-  ) async {
+  Future<void> createEmissionCard(Datapoint dp) async {
     try {
       // Reference to Firestore collection
       CollectionReference emissions =
           FirebaseFirestore.instance.collection('emissions');
 
       // Create the document
-      await emissions.add({
-
-        
-        // Include user ID if needed
-      });
+      await emissions.add(dp.toMap());
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Emission card saved successfully!")),
@@ -427,20 +465,21 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
           borderSide: BorderSide.none,
         ),
         suffixText: suffix,
-        suffixStyle: const TextStyle(color: Colors.white),
+        suffixStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
       ),
     );
   }
 
-  Future<void> _navigateToDataTablePage(
-      BuildContext context, String? selectedEmission) async {
+  void _navigateToDataTablePage(
+      BuildContext context, String? selectedEmission) {
     if (selectedEmission != null) {
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => DataTablePage(
             emissionName: selectedEmission,
-            userId: widget.userId, emissionType: '', // Pass userId directly
+            userId: widget.userId,
+            emissionType: selectedEmission,
           ),
         ),
       );
