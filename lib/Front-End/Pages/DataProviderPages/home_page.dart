@@ -1,12 +1,18 @@
+import 'package:climate_edge/Back-End/Controllers/data_point_controller.dart';
+import 'package:climate_edge/Back-End/Models/data_point_model.dart';
 import 'package:climate_edge/Front-End/Components/emission_selector.dart';
 import 'package:climate_edge/Front-End/Components/page_header.dart';
 import 'package:climate_edge/Front-End/Pages/DataProviderPages/data_table_page.dart';
-import 'package:climate_edge/Front-End/log_in_page.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class DataProviderHomePage extends StatefulWidget {
-  const DataProviderHomePage(BuildContext context);
+  final String userId;
+
+  const DataProviderHomePage({super.key, required this.userId});
+
   @override
   _DataProviderHomePageState createState() => _DataProviderHomePageState();
 }
@@ -31,7 +37,7 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
   List<String> refrigerantsList = [];
   List<String> mobileFuelList = [];
   List<String> fertilizersList = [];
-  String? selectedDate; // Track the selected date
+  late String selectedDate; // Track the selected date
   String? uploadedFileName; // Track the uploaded file name
 
   @override
@@ -84,6 +90,11 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
   }
 
   void _showEmissionPopup(BuildContext context) {
+    String location = '';
+    String fuelAmount = '';
+    String consumptionAmount = '';
+    String chargedAmount = '';
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -124,7 +135,10 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        _buildTextField(context, "Enter location"),
+                        _buildTextField(context, "Enter location",
+                            onChanged: (value) {
+                          location = value;
+                        }),
                         const SizedBox(height: 20),
                         const Text(
                           "Emission Source",
@@ -183,7 +197,9 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                           ),
                           const SizedBox(height: 10),
                           _buildTextField(context, "Enter Fuel Amount",
-                              suffix: "kg"),
+                              suffix: "kg", onChanged: (value) {
+                            fuelAmount = value;
+                          }),
                         ] else if (newItem1Saved ==
                             'Purchased Electricity') ...[
                           const Text(
@@ -196,7 +212,9 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                           ),
                           const SizedBox(height: 10),
                           _buildTextField(context, "Enter Consumption Amount",
-                              suffix: "kg"),
+                              suffix: "kg", onChanged: (value) {
+                            consumptionAmount = value;
+                          }),
                         ] else if (newItem1Saved == 'Mobile Fuel') ...[
                           const Text(
                             "Mobile Fuel Type",
@@ -252,7 +270,9 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                           ),
                           const SizedBox(height: 10),
                           _buildTextField(context, "Enter Charged Amount",
-                              suffix: "kg"),
+                              suffix: "kg", onChanged: (value) {
+                            chargedAmount = value;
+                          }),
                         ] else if (newItem1Saved == 'Fertilizers') ...[
                           const Text(
                             "Fertilizers Type",
@@ -278,20 +298,9 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                         ],
                         const SizedBox(height: 20),
                         const Text(
-                          "Date",
+                          "Select a Date",
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          selectedDate != null
-                              ? selectedDate!
-                              : "No date selected",
-                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
@@ -309,55 +318,62 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                             if (pickedDate != null) {
                               setState(() {
                                 selectedDate =
-                                    "${pickedDate.toLocal()}".split(' ')[0];
+                                    "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
                               });
                             }
                           },
-                          child: const Text("Select Date"),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromARGB(255, 255, 255, 255),
+                          ),
+                          child: Text(selectedDate ?? 'Select Date'),
                         ),
                         const SizedBox(height: 20),
-                        const Text(
-                          "Attachment",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          uploadedFileName != null
-                              ? uploadedFileName!
-                              : "No file uploaded",
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
                         ElevatedButton(
                           onPressed: () async {
+                            // File Picker logic
                             FilePickerResult? result =
                                 await FilePicker.platform.pickFiles();
                             if (result != null) {
                               setState(() {
-                                uploadedFileName = result.files.first
-                                    .name; // Update the name of the uploaded file
+                                uploadedFileName = result.files.single.name;
                               });
                             }
                           },
-                          child: const Text("Add Attachment"),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromARGB(255, 255, 255, 255),
+                          ),
+                          child: Text(uploadedFileName ?? 'Upload File'),
                         ),
                         const SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () {
-                            // Handle submit action here
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text("Submit"),
-                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment
+                              .center, // Center the buttons horizontally
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                // Call createEmissionCard with the gathered data
+                                Datapoint datapoint=new Datapoint(date:selectedDate ,emissionAmount:double.parse(consumptionAmount),emissionSource: newItem1Saved,id: '',location: location,status: "Pending",emissionCalculated: 0,fileAttachment: uploadedFileName );
+
+                                createEmissionCard(
+
+                                );
+                                Navigator.pop(context);
+                              },
+                              child: const Text("Save"),
+                            ),
+                            const SizedBox(
+                                width:
+                                    20), // Add some space between the buttons
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text("Cancel"),
+                            ),
+                          ],
+                        )
                       ],
                     ),
                   ),
@@ -369,39 +385,65 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
       },
     );
   }
+  
+  // Function to create an emission card and save to Firebase
+  Future<void> createEmissionCard(
+   
+  ) async {
+    try {
+      // Reference to Firestore collection
+      CollectionReference emissions =
+          FirebaseFirestore.instance.collection('emissions');
 
+      // Create the document
+      await emissions.add({
+
+        
+        // Include user ID if needed
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Emission card saved successfully!")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error saving emission card: $e")),
+      );
+    }
+  }
+
+  // Helper method to build text fields
   Widget _buildTextField(BuildContext context, String hintText,
-      {String? suffix}) {
+      {String? suffix, required ValueChanged<String> onChanged}) {
     return TextField(
+      onChanged: onChanged,
       decoration: InputDecoration(
-        filled: true,
-        fillColor: Colors.white,
         hintText: hintText,
+        hintStyle: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+        filled: true,
+        fillColor: const Color.fromARGB(255, 255, 255, 255),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide.none,
         ),
-        suffixText: suffix, // Add the suffix to the input field
+        suffixText: suffix,
+        suffixStyle: const TextStyle(color: Colors.white),
       ),
     );
   }
 
-  void _navigateToDataTablePage(BuildContext context, String? selectedItem) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DataTablePage(
-  emissionName: '$selectedItem',
-  userId: 'User123',
-  rowData: [
-    ['200', 'Location 1', '2024-10-14', '100', 'Accepted'],
-    ['150', 'Location 2', '2024-10-12', '75', 'Rejected'],
-    ['10', 'Location 3', '2024-1-2', '750', 'Pending'],
-
-    // Add more rows
-  ],
-),
-      ),
-    );
+  Future<void> _navigateToDataTablePage(
+      BuildContext context, String? selectedEmission) async {
+    if (selectedEmission != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DataTablePage(
+            emissionName: selectedEmission,
+            userId: widget.userId, emissionType: '', // Pass userId directly
+          ),
+        ),
+      );
+    }
   }
 }

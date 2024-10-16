@@ -28,7 +28,7 @@ class SideBarMenu extends StatelessWidget {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => DataProviderHomePage(context),
+                      builder: (context) => DataProviderHomePage(userId: '',),
                     ),
                   );
                 },
@@ -46,13 +46,7 @@ class SideBarMenu extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => DataTablePage(
                         emissionName: 'Purchased Electricity',
-                        userId: 'User123',
-                        rowData: [
-                          ['200', 'Location 1', '2024-10-14', '100', 'Accepted'],
-                          ['150', 'Location 2', '2024-10-12', '75', 'Rejected'],
-                          ['151', 'Location 3', '2024-10-13', '750', 'Pending'],
-                          // Add more rows if needed
-                        ],
+                        userId: 'User123', emissionType: '',
                       ),
                     ),
                   );}),
@@ -64,13 +58,7 @@ class SideBarMenu extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => DataTablePage(
                         emissionName: 'Stationary Fuel',
-                        userId: 'User123',
-                        rowData: [
-                          ['200', 'Location 1', '2024-10-14', '100', 'Accepted'],
-                          ['150', 'Location 2', '2024-10-12', '75', 'Rejected'],
-                          ['151', 'Location 3', '2024-10-13', '750', 'Pending'],
-                          // Add more rows if needed
-                        ],
+                        userId: 'User123', emissionType: '',
                       ),
                     ),
                   );}),
@@ -80,13 +68,7 @@ class SideBarMenu extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => DataTablePage(
                         emissionName: 'Refrigerants',
-                        userId: 'User123',
-                        rowData: [
-                          ['200', 'Location 1', '2024-10-14', '100', 'Accepted'],
-                          ['150', 'Location 2', '2024-10-12', '75', 'Rejected'],
-                          ['151', 'Location 3', '2024-10-13', '750', 'Pending'],
-                          // Add more rows if needed
-                        ],
+                        userId: 'User123', emissionType: '',
                       ),
                     ),
                   );}),
@@ -96,13 +78,7 @@ class SideBarMenu extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => DataTablePage(
                         emissionName: 'Mobile Fuel',
-                        userId: 'User123',
-                        rowData: [
-                          ['200', 'Location 1', '2024-10-14', '100', 'Accepted'],
-                          ['150', 'Location 2', '2024-10-12', '75', 'Rejected'],
-                          ['151', 'Location 3', '2024-10-13', '750', 'Pending'],
-                          // Add more rows if needed
-                        ],
+                        userId: 'User123', emissionType: '',
                       ),
                     ),
                   );}),
@@ -113,13 +89,7 @@ class SideBarMenu extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => DataTablePage(
                         emissionName: 'Fertilizers',
-                        userId: 'User123',
-                        rowData: [
-                          ['200', 'Location 1', '2024-10-14', '100', 'Accepted'],
-                          ['150', 'Location 2', '2024-10-12', '75 ', 'Rejected'],
-                          ['151', 'Location 3', '2024-10-13', '750', 'Pending'],
-                          // Add more rows if needed
-                        ],
+                        userId: 'User123', emissionType: '',
                       ),
                     ),
                   );}),

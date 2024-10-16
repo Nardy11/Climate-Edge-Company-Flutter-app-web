@@ -1,5 +1,6 @@
 import 'package:climate_edge/Front-End/log_in_page.dart';
 import 'package:flutter/material.dart';
+import 'package:climate_edge/Back-End/Controllers/user_controller.dart';
 
 class PageHeader extends StatefulWidget {
   const PageHeader({super.key});
@@ -60,6 +61,7 @@ class _PageHeaderState extends State<PageHeader> {
             onSelected: (value) {
               if (value == 'logout') {
                 // Navigate to LoginPage on logout selection
+                AuthService().signOut();
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => const LoginPage()),

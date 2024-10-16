@@ -1,3 +1,4 @@
+import 'package:climate_edge/Back-End/Controllers/user_controller.dart';
 import 'package:climate_edge/Front-End/Pages/DataProviderPages/home_page.dart';
 import 'package:flutter/material.dart';
 
@@ -9,9 +10,11 @@ class LoginPage extends StatelessWidget {
     // Get screen size information
     final size = MediaQuery.of(context).size;
     final isSmallScreen = size.width < 600;
-    final logoSize = isSmallScreen
-        ? size.width * 0.4
-        : size.width * 0.2; // Logo scales with screen width
+    final logoSize = isSmallScreen ? size.width * 0.4 : size.width * 0.2; // Logo scales with screen width
+
+    // Define controllers for email and password
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
 
     return Scaffold(
       body: Stack(
@@ -81,6 +84,7 @@ class LoginPage extends StatelessWidget {
                   SizedBox(
                     width: isSmallScreen ? size.width * 0.85 : size.width * 0.5,
                     child: TextField(
+                      controller: emailController,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
@@ -96,6 +100,7 @@ class LoginPage extends StatelessWidget {
                   SizedBox(
                     width: isSmallScreen ? size.width * 0.85 : size.width * 0.5,
                     child: TextField(
+                      controller: passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
@@ -107,24 +112,41 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
+
                   // Log In Button
                   SizedBox(
                     width: isSmallScreen ? size.width * 0.85 : size.width * 0.5,
                     child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
+                      onPressed: () async {
+                        // Get email and password values
+                        String email = emailController.text.trim();
+                        String password = passwordController.text.trim();
+                        
+                        // Call signInWithEmailPassword function from AuthService
+                        var user = await AuthService().signInWithEmailPassword(context, email, password);
+                        if (user != null) {
+                          // Successfully signed in, navigate or show success message
+                          Navigator.pushReplacement(
+                            // ignore: use_build_context_synchronously
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    DataProviderHomePage(context)));
+                              builder: (context) => DataProviderHomePage(userId: user.id,),
+                            ),
+                          );
+                        } else {
+                          // Handle sign-in error (show a message, etc.)
+                          // ignore: use_build_context_synchronously
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Invalid email or password')),
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 50, vertical: 15),
+                        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                       ),
                       child: const Text(
                         'Log In',

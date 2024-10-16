@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "firebase": "^10.14.1",
+    "firebase-core": "^1.0.2"
+  },
+  "name": "climate-edge-company-flutter-app-web",
+  "version": "1.0.0",
+  "description": "A new Flutter project.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
