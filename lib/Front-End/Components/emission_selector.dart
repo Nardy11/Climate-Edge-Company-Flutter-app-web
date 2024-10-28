@@ -9,8 +9,7 @@ class EmissionSelector extends StatelessWidget {
   final List<String> itemLists;
   final String hintText;
 
-  List<String> k=[];
-   EmissionSelector({
+  EmissionSelector({
     Key? key,
     this.selectedItem,
     required this.onChanged,
@@ -18,13 +17,14 @@ class EmissionSelector extends StatelessWidget {
     this.textColor = Colors.black, // Default text color
     this.borderColor = Colors.black, // Default border color
     this.itemLists = const [], // Default to an empty list
-    this.hintText='Choose an emission type',
+    this.hintText = 'Choose an emission type',
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: DropdownButtonFormField<String>(
+      child: Flexible( child: 
+DropdownButtonFormField<String>(
         decoration: InputDecoration(
           filled: true,
           fillColor: backgroundColor, // Set background color
@@ -45,14 +45,20 @@ class EmissionSelector extends StatelessWidget {
         items: itemLists.map((item) {
           return DropdownMenuItem<String>(
             value: item,
-            child: Text(
-              item,
-              style: TextStyle(fontSize: 15, color: textColor), // Set item text color
+            child: SizedBox(
+              width: 250, // Set a fixed width, you can adjust this as needed
+              child: Text(
+                item,
+                style: TextStyle(fontSize: 15, color: textColor), // Set item text color
+                maxLines: 2, // Allow text to wrap to a second line
+                overflow: TextOverflow.ellipsis, // Add ellipsis if the text is too long
+                softWrap: true, // Allow text wrapping
+              ),
             ),
           );
         }).toList(),
         onChanged: onChanged, // Use the callback here
       ),
-    );
+    ));
   }
 }

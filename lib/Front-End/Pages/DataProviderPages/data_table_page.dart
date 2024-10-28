@@ -64,7 +64,7 @@ class _DataTablePageState extends State<DataTablePage> {
       ),
       drawer: const SideBarMenu(),
       body: isLoading
-          ? Center(
+          ? const Center(
               child:
                   CircularProgressIndicator()) // Show a loader while data is being fetched
           : SingleChildScrollView(
@@ -93,7 +93,7 @@ class _DataTablePageState extends State<DataTablePage> {
                         ),
                         const SizedBox(width: 10),
                         SizedBox(
-                          width: 200,
+                          width: 300,
                           child: EmissionSelector(
                             itemLists: filterationList,
                             backgroundColor: const Color(0xFFECEFF1),

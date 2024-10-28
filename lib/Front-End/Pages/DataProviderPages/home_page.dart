@@ -28,7 +28,11 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
   String? refrigerantsType; // Track the selected emission in the dialog
   String? mobileFuelType; // Track the selected emission
   String? fertilizersType; // Track the selected emission in the
-
+  String location = '';
+  double fuelAmount = 0;
+  double consumptionAmount = 0;
+  double chargedAmount = 0;
+  double fertilizerAmount = 0;
   List<String> itemList = [
     'Purchased Electricity',
     'Stationary Fuel',
@@ -110,12 +114,6 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
   }
 
   void _showEmissionPopup(BuildContext context) {
-    String location = '';
-    double fuelAmount = 0;
-    double consumptionAmount = 0;
-    double chargedAmount = 0;
-    double FertilizerAmount = 0;
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -123,8 +121,8 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20.0),
           ),
-          child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
+          child: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
               return ConstrainedBox(
                 constraints: BoxConstraints(
                   maxWidth: MediaQuery.of(context).size.width * 0.35,
@@ -181,155 +179,23 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                             setState(() {
                               selectedEmission1 = newItem1;
                               newItem1Saved = newItem1;
+                              print(
+                                  "newItem1Saved: $newItem1Saved"); // Debugging print statement
                             });
                           },
                         ),
                         const SizedBox(height: 20),
                         if (newItem1Saved == 'Stationary Fuel') ...[
-                          const Text(
-                            "Stationary Fuel Type",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          EmissionSelector(
-                            itemLists: stationaryFuelList,
-                            backgroundColor: const Color(0xFFECEFF1),
-                            textColor: Colors.black,
-                            borderColor: const Color.fromARGB(255, 0, 0, 0),
-                            selectedItem: stationaryFuelType,
-                            onChanged: (String? newItem) {
-                              setState(() {
-                                stationaryFuelType = newItem;
-                              });
-                            },
-                          ),
-                          const SizedBox(height: 10),
-                          const Text(
-                            "Fuel Amount",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          _buildTextField(context, "Enter Fuel Amount",
-                              onChanged: (value) {
-                            fuelAmount = double.parse(value);
-                          }),
+                          _buildStationaryFuelFields(setState)
                         ] else if (newItem1Saved ==
                             'Purchased Electricity') ...[
-                          const Text(
-                            "Consumption Amount",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          _buildTextField(context, "Enter Consumption Amount",
-                              onChanged: (value) {
-                            consumptionAmount = double.parse(value);
-                          }),
+                          _buildPurchasedElectricityFields(setState)
                         ] else if (newItem1Saved == 'Mobile Fuel') ...[
-                          const Text(
-                            "Mobile Fuel Type",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          EmissionSelector(
-                            itemLists: mobileFuelList,
-                            backgroundColor: const Color(0xFFECEFF1),
-                            textColor: Colors.black,
-                            borderColor: const Color.fromARGB(255, 0, 0, 0),
-                            selectedItem: mobileFuelType,
-                            onChanged: (String? newItem) {
-                              setState(() {
-                                mobileFuelType = newItem;
-                              });
-                            },
-                          ),
+                          _buildMobileFuelFields(setState)
                         ] else if (newItem1Saved == 'Refrigerants') ...[
-                          const Text(
-                            "Refrigerant Type",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          EmissionSelector(
-                            itemLists: refrigerantsList,
-                            backgroundColor: const Color(0xFFECEFF1),
-                            textColor: Colors.black,
-                            borderColor: const Color.fromARGB(255, 0, 0, 0),
-                            selectedItem: refrigerantsType,
-                            onChanged: (String? newItem) {
-                              setState(() {
-                                refrigerantsType = newItem;
-                              });
-                            },
-                          ),
-                          const SizedBox(height: 10),
-                          const Text(
-                            "Charged Amount",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          _buildTextField(context, "Enter Charged Amount",
-                              onChanged: (value) {
-                            chargedAmount = double.parse(value);
-                          }),
+                          _buildRefrigerantsFields(setState)
                         ] else if (newItem1Saved == 'Fertilizers') ...[
-                          const Text(
-                            "Fertilizers Type",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          EmissionSelector(
-                            itemLists: fertilizersList,
-                            backgroundColor: const Color(0xFFECEFF1),
-                            textColor: Colors.black,
-                            borderColor: const Color.fromARGB(255, 0, 0, 0),
-                            selectedItem: fertilizersType,
-                            onChanged: (String? newItem) {
-                              setState(() {
-                                fertilizersType = newItem;
-                              });
-                            },
-                          ),
-                          const SizedBox(height: 10),
-                          const Text(
-                            "Fertilizer Amount",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          _buildTextField(context, "Enter Fertilizer Amount",
-                              onChanged: (value) {
-                            FertilizerAmount = double.parse(value);
-                          }),
+                          _buildFertilizersFields(setState)
                         ],
                         const SizedBox(height: 20),
                         const Text(
@@ -364,48 +230,54 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                           child: Text(selectedDate ?? 'Select Date'),
                         ),
                         const SizedBox(height: 20),
-                       ElevatedButton(
-  onPressed: () async {
-    // File Picker logic to select any file
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.any, // Allow any file type
-    );
+                        ElevatedButton(
+                          onPressed: () async {
+                            // File Picker logic to select any file
+                            FilePickerResult? result =
+                                await FilePicker.platform.pickFiles(
+                              type: FileType.any, // Allow any file type
+                            );
 
-    if (result != null) {
-      String fileName = result.files.single.name;
-      Uint8List? fileData = result.files.single.bytes;
+                            if (result != null) {
+                              String fileName = result.files.single.name;
+                              Uint8List? fileData = result.files.single.bytes;
 
-      if (fileData != null) {
-        // Upload the picked file to Firebase Storage
-        String? uploadedFileUrl = await uploadFile(fileName, fileData);
-        if (uploadedFileUrl != null) {
-          // Successfully uploaded, save the download URL
-          setState(() {
-            uploadedFileName = uploadedFileUrl; // Assign the URL to fileAttachment
-          });
-        }
-      } else {
-        // If bytes are null, read the file from the file path
-        String? path = result.files.single.path;
-        if (path != null) {
-          File file = File(path);
-          Uint8List fileBytes = await file.readAsBytes();
-          String? uploadedFileUrl = await uploadFile(fileName, fileBytes);
-          if (uploadedFileUrl != null) {
-            setState(() {
-              uploadedFileName = uploadedFileUrl; // Assign the URL to fileAttachment
-            });
-          }
-        }
-      }
-    }
-  },
-  style: ElevatedButton.styleFrom(
-    backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-  ),
-  child: Text(uploadedFileName ?? 'Upload File'),
-),
-
+                              if (fileData != null) {
+                                // Upload the picked file to Firebase Storage
+                                String uploadedFileUrl =
+                                    await uploadFile(fileName, fileData);
+                                if (uploadedFileUrl != '') {
+                                  // Successfully uploaded, save the download URL
+                                  setState(() {
+                                    uploadedFileName =
+                                        uploadedFileUrl; // Assign the URL to fileAttachment
+                                  });
+                                }
+                              } else {
+                                // If bytes are null, read the file from the file path
+                                String? path = result.files.single.path;
+                                if (path != null) {
+                                  File file = File(path);
+                                  Uint8List fileBytes =
+                                      await file.readAsBytes();
+                                  String? uploadedFileUrl =
+                                      await uploadFile(fileName, fileBytes);
+                                  if (uploadedFileUrl != '') {
+                                    setState(() {
+                                      uploadedFileName =
+                                          uploadedFileUrl; // Assign the URL to fileAttachment
+                                    });
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromARGB(255, 255, 255, 255),
+                          ),
+                          child: Text(uploadedFileName ?? 'Upload File'),
+                        ),
                         const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment
@@ -414,7 +286,7 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                             ElevatedButton(
                               onPressed: () {
                                 // Call createEmissionCard with the gathered data
-                                Datapoint dp = new Datapoint(
+                                Datapoint dp = Datapoint(
                                   id: "",
                                   emissionSource: selectedEmission1,
                                   location: location,
@@ -424,7 +296,7 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                                   emissionAmount: chargedAmount +
                                       consumptionAmount +
                                       fuelAmount +
-                                      FertilizerAmount,
+                                      fertilizerAmount,
                                   emissionCalculated: onEmissionTypeSelected(
                                       selectedEmission1!,
                                       ((stationaryFuelType ?? '') +
@@ -434,15 +306,15 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                                       (chargedAmount +
                                           consumptionAmount +
                                           fuelAmount +
-                                          FertilizerAmount)),
+                                          fertilizerAmount)),
                                   emissionType: (stationaryFuelType ?? '') +
                                       (refrigerantsType ?? '') +
                                       (fertilizersType ?? '') +
                                       (mobileFuelType ?? ''),
                                 );
                                 createEmissionCard(dp);
-
                                 Navigator.pop(context);
+                                _clearData();
                               },
                               child: const Text("Save"),
                             ),
@@ -452,6 +324,7 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                             ElevatedButton(
                               onPressed: () {
                                 Navigator.pop(context);
+                                _clearData();
                               },
                               child: const Text("Cancel"),
                             ),
@@ -642,5 +515,195 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
     }
 
     return amount * emissionFactor;
+  }
+
+  _buildStationaryFuelFields(setState) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Stationary Fuel Type",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 10),
+        EmissionSelector(
+          itemLists: stationaryFuelList,
+          backgroundColor: const Color(0xFFECEFF1),
+          textColor: Colors.black,
+          borderColor: const Color.fromARGB(255, 0, 0, 0),
+          selectedItem: stationaryFuelType,
+          onChanged: (String? newItem2) {
+            setState(() {
+              stationaryFuelType = newItem2;
+            });
+          },
+        ),
+        const SizedBox(height: 10),
+        const Text(
+          "Fuel Amount",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 10),
+        _buildTextField(
+          context,
+          "Enter Fuel Amount",
+          onChanged: (value) {
+            fuelAmount = double.parse(value);
+          },
+        ),
+      ],
+    );
+  }
+
+  _buildPurchasedElectricityFields(setState) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const Text(
+        "Consumption Amount",
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+      const SizedBox(height: 10),
+      _buildTextField(context, "Enter Consumption Amount", onChanged: (value) {
+        consumptionAmount = double.parse(value);
+      }),
+    ]);
+  }
+
+  _buildMobileFuelFields(setState) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const Text(
+        "Mobile Fuel Type",
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+      const SizedBox(height: 10),
+      EmissionSelector(
+        itemLists: mobileFuelList,
+        backgroundColor: const Color(0xFFECEFF1),
+        textColor: Colors.black,
+        borderColor: const Color.fromARGB(255, 0, 0, 0),
+        selectedItem: mobileFuelType,
+        onChanged: (String? newItem3) {
+          setState(() {
+            mobileFuelType = newItem3;
+          });
+        },
+      ),
+    ]);
+  }
+
+  _buildRefrigerantsFields(setState) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const Text(
+        "Refrigerant Type",
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+      const SizedBox(height: 10),
+      EmissionSelector(
+        itemLists: refrigerantsList,
+        backgroundColor: const Color(0xFFECEFF1),
+        textColor: Colors.black,
+        borderColor: const Color.fromARGB(255, 0, 0, 0),
+        selectedItem: refrigerantsType,
+        onChanged: (String? newItem4) {
+          setState(() {
+            refrigerantsType = newItem4;
+          });
+        },
+      ),
+      const SizedBox(height: 10),
+      const Text(
+        "Charged Amount",
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+      const SizedBox(height: 10),
+      _buildTextField(context, "Enter Charged Amount", onChanged: (value) {
+        chargedAmount = double.parse(value);
+      }),
+    ]);
+  }
+
+  _buildFertilizersFields(setState) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const Text(
+        "Fertilizers Type",
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+      const SizedBox(height: 10),
+      EmissionSelector(
+        itemLists: fertilizersList,
+        backgroundColor: const Color(0xFFECEFF1),
+        textColor: Colors.black,
+        borderColor: const Color.fromARGB(255, 0, 0, 0),
+        selectedItem: fertilizersType,
+        onChanged: (String? newItem5) {
+          setState(() {
+            fertilizersType = newItem5;
+          });
+        },
+      ),
+      const SizedBox(height: 10),
+      const Text(
+        "Fertilizer Amount",
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+      const SizedBox(height: 10),
+      _buildTextField(context, "Enter Fertilizer Amount", onChanged: (value) {
+        fertilizerAmount = double.parse(value);
+      }),
+    ]);
+  }
+  _clearData(){
+    selectedEmission =
+                                    null; // Track the selected emission
+                                selectedEmission1 =
+                                    null; // Track the selected emission in the dialog
+                                newItemSaved =
+                                    null; // Track the selected emission
+                                newItem1Saved =
+                                    null; // Track the selected emission in the dialog
+                                stationaryFuelType =
+                                    null; // Track the selected emission
+                                refrigerantsType =
+                                    null; // Track the selected emission in the dialog
+                                mobileFuelType =
+                                    null; // Track the selected emission
+                                fertilizersType =
+                                    null; // Track the selected emission in the
+                                location = '';
+                                fuelAmount = 0;
+                                consumptionAmount = 0;
+                                chargedAmount = 0;
+                                fertilizerAmount = 0;
   }
 }
