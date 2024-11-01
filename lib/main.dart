@@ -44,6 +44,8 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const LoginPage(), // Make sure the LoginPage is defined correctly
+      debugShowCheckedModeBanner: false,
     );
+    
   }
 }
