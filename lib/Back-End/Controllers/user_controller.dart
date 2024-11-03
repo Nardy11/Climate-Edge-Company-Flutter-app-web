@@ -1,6 +1,5 @@
 
 import 'package:climate_edge/Back-End/Models/user_model.dart 'as user;
-import 'package:climate_edge/Front-End/Pages/DataProviderPages/home_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -35,18 +34,6 @@ class AuthService {
         userData,
         querySnapshot.docs[0].id,
       );
-
-      // Check user role and navigate accordingly
-      if (currentUser.role == ("dataProvider")) {
-        // Navigate to DataProviderHomePage with user ID
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DataProviderHomePage(userId: currentUser.id),
-          ),
-        );
-      }
-
       return currentUser; // Return the current user
     } else {
       // No matching user found

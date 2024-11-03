@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:climate_edge/Front-End/Pages/DataProviderPages/data_table_page.dart';
+import 'package:climate_edge/Front-End/data_table_page.dart';
 import 'package:climate_edge/Front-End/Pages/DataProviderPages/home_page.dart';
 import 'package:climate_edge/Front-End/log_in_page.dart';
 import 'package:firebase_core/firebase_core.dart';

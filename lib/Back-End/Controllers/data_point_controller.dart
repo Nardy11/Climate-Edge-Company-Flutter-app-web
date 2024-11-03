@@ -51,17 +51,24 @@ Future<void> createEmissionCard(Datapoint datapoint) async {
     print("Error creating emission card: $e");
   }
 }
-Future<List<List<String>>> getEmissionCardsBySource(String emissionSource) async {
+Future<List<List<String>>> getEmissionCardsBySource(String emissionSource,String condition) async {
   List<List<String>> rowData = [];
 
   try {
     // Reference to the Firestore collection
     CollectionReference collection = FirebaseFirestore.instance.collection('emissions');
-
-    // Fetching documents for the specific emission source
-    QuerySnapshot querySnapshot = await collection
+    QuerySnapshot querySnapshot;
+    if(condition == "status"){
+     querySnapshot = await collection
+        .where('emissionSource', isEqualTo: emissionSource).where('status',isEqualTo: "Pending")
+        .get();
+    }else{
+     querySnapshot = await collection
         .where('emissionSource', isEqualTo: emissionSource)
         .get();
+    }
+    // Fetching documents for the specific emission source
+
 
     // Mapping documents to the desired row format
     for (var doc in querySnapshot.docs) {
@@ -77,7 +84,7 @@ Future<List<List<String>>> getEmissionCardsBySource(String emissionSource) async
       String status = data['status'] ?? 'Pending'; // Default to 'Pending' if null
       String emissionType = data['emissionType'] ?? 'Unknown'; // Default to 'Unknown' if null
       String fileAttachment = data['fileAttachment'] ?? ''; // Default to empty string if null
-
+      String rejectedReason =data['rejectedReason']?.toString() ?? '';
       // Create a row for each emission card
       List<String> row = [
         emissionAmount,
@@ -87,6 +94,8 @@ Future<List<List<String>>> getEmissionCardsBySource(String emissionSource) async
         status,
         emissionType,
         fileAttachment,
+        doc.id.toString(),
+        rejectedReason,
       ];
 
       rowData.add(row);
@@ -98,7 +107,42 @@ Future<List<List<String>>> getEmissionCardsBySource(String emissionSource) async
   }
 
   return rowData;
-}Future<String> uploadFile(String fileName, Uint8List fileData) async {
+}
+
+
+Future<void> updateEmissionCard(BuildContext context, List<String> rowData, String newStatus,String emissionSource ,String rejectedReason) async {
+  CollectionReference collection = FirebaseFirestore.instance.collection('emissions');
+  try {
+    print(rowData);
+    print(rejectedReason);
+    Datapoint datapoint = Datapoint(
+    id: rowData[7], // Ensure you have an ID at index 0 or change accordingly
+    emissionAmount: double.parse(rowData[0]),
+    location: rowData[1],
+    date: rowData[2],
+    emissionCalculated: double.parse(rowData[3]),
+    status: newStatus,
+    emissionType: rowData[5],
+    fileAttachment:  rowData[6] , emissionSource: emissionSource,
+    rejectedReason:rejectedReason
+  );
+      await collection.doc(datapoint.id).update(datapoint.toMap());
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Emission card was updated to be $newStatus.'),
+      ),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error updating emission card status: $e'),
+      ),
+    );
+  }
+}
+
+Future<String> uploadFile(String fileName, Uint8List fileData) async {
   try {
     Reference ref = FirebaseStorage.instance.ref().child('uploads/$fileName');
 

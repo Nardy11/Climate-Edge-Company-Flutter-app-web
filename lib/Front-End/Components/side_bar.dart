@@ -1,9 +1,13 @@
-import 'package:climate_edge/Front-End/Pages/DataProviderPages/data_table_page.dart';
+import 'package:climate_edge/Front-End/data_table_page.dart';
 import 'package:climate_edge/Front-End/Pages/DataProviderPages/home_page.dart';
+import 'package:climate_edge/Front-End/Pages/DataReviewerPages/home_page.dart';
 import 'package:flutter/material.dart';
 
 class SideBarMenu extends StatelessWidget {
-  const SideBarMenu({Key? key}) : super(key: key);
+  final String userId;
+  final String userRole;
+  const SideBarMenu({Key? key, required this.userId, required this.userRole})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,15 +26,31 @@ class SideBarMenu extends StatelessWidget {
               ),
               child: Center(
                   child: _buildDrawerItem(
-                              size: 30,icon: Icons.home,
+                size: 30,
+                icon: Icons.home,
                 text: 'Main Page',
                 onTap: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DataProviderHomePage(userId: '',),
-                    ),
-                  );
+                  if (userRole == ("dataProvider")) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DataProviderHomePage(
+                          userId: userId,
+                          userRole: userRole,
+                        ),
+                      ),
+                    );
+                  } else {
+                    if (userRole == ("dataViewer")) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomePageReviewer(
+                              userId: userId, userRole: userRole),
+                        ),
+                      );
+                    }
+                  }
                 },
               )),
             ),
@@ -39,60 +59,85 @@ class SideBarMenu extends StatelessWidget {
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
             _buildDrawerItem(
-                              size: 20,icon: Icons.electric_rickshaw_outlined,
+                size: 20,
+                icon: Icons.electric_rickshaw_outlined,
                 text: 'Purchased Electricity',
-                onTap:() { Navigator.push(
+                onTap: () {
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => DataTablePage(
                         emissionName: 'Purchased Electricity',
-                        userId: 'User123',
+                        userId: userId,
+                        userRole: userRole,
                       ),
                     ),
-                  );}),
+                  );
+                }),
             _buildDrawerItem(
-                              size: 20,icon: Icons.local_gas_station,
+                size: 20,
+                icon: Icons.local_gas_station,
                 text: 'Stationary Fuel',
-                onTap: () { Navigator.push(
+                onTap: () {
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => DataTablePage(
                         emissionName: 'Stationary Fuel',
-                        userId: 'User123',
+                        userId: userId,
+                        userRole: userRole,
                       ),
                     ),
-                  );}),
+                  );
+                }),
             _buildDrawerItem(
-                              size: 20,icon: Icons.ac_unit, text: 'Refrigerants', onTap: () { Navigator.push(
+                size: 20,
+                icon: Icons.ac_unit,
+                text: 'Refrigerants',
+                onTap: () {
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => DataTablePage(
                         emissionName: 'Refrigerants',
-                        userId: 'User123',
+                        userId: userId,
+                        userRole: userRole,
                       ),
                     ),
-                  );}),
+                  );
+                }),
             _buildDrawerItem(
-                              size: 20,icon: Icons.local_shipping, text: 'Mobile Fuel', onTap: () { Navigator.push(
+                size: 20,
+                icon: Icons.local_shipping,
+                text: 'Mobile Fuel',
+                onTap: () {
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => DataTablePage(
                         emissionName: 'Mobile Fuel',
-                        userId: 'User123',
+                        userId: userId,
+                        userRole: userRole,
                       ),
                     ),
-                  );}),
+                  );
+                }),
             _buildDrawerItem(
-              size: 20,
-                icon: Icons.agriculture, text: 'Fertilizers', onTap: () { Navigator.push(
+                size: 20,
+                icon: Icons.agriculture,
+                text: 'Fertilizers',
+                onTap: () {
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => DataTablePage(
                         emissionName: 'Fertilizers',
-                        userId: 'User123',
+                        userId: userId,
+                        userRole: userRole,
                       ),
                     ),
-                  );}),
+                  );
+                }),
           ],
         ),
       ),
@@ -100,16 +145,18 @@ class SideBarMenu extends StatelessWidget {
   }
 
   // Reusable function for drawer items
-  ListTile _buildDrawerItem(
-      {required IconData icon,
-      required String text,
-      required GestureTapCallback onTap,
-      required double size ,
-      }) {
+  ListTile _buildDrawerItem({
+    required IconData icon,
+    required String text,
+    required GestureTapCallback onTap,
+    required double size,
+  }) {
     return ListTile(
       leading: Icon(icon, color: Colors.white),
-      title: Text(text, style: TextStyle(color: Colors.white,      fontSize: size, // Increase the font size here
-)),
+      title: Text(text,
+          style: TextStyle(
+            color: Colors.white, fontSize: size, // Increase the font size here
+          )),
       onTap: onTap,
       tileColor: const Color(
           0xFF0E3929), // Set background color for each tile to dark green

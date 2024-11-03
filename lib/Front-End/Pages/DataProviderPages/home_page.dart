@@ -5,15 +5,16 @@ import 'package:climate_edge/Back-End/Controllers/data_point_controller.dart';
 import 'package:climate_edge/Back-End/Models/data_point_model.dart';
 import 'package:climate_edge/Front-End/Components/emission_selector.dart';
 import 'package:climate_edge/Front-End/Components/page_header.dart';
-import 'package:climate_edge/Front-End/Pages/DataProviderPages/data_table_page.dart';
+import 'package:climate_edge/Front-End/data_table_page.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
 
 class DataProviderHomePage extends StatefulWidget {
   final String userId;
+  final String userRole;
 
-  const DataProviderHomePage({super.key, required this.userId});
+  const DataProviderHomePage({super.key, required this.userId,required this.userRole});
 
   @override
   _DataProviderHomePageState createState() => _DataProviderHomePageState();
@@ -311,6 +312,7 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
                                       (refrigerantsType ?? '') +
                                       (fertilizersType ?? '') +
                                       (mobileFuelType ?? ''),
+                                  rejectedReason: ''
                                 );
                                 createEmissionCard(dp);
                                 Navigator.pop(context);
@@ -391,6 +393,7 @@ class _DataProviderHomePageState extends State<DataProviderHomePage> {
           builder: (context) => DataTablePage(
             emissionName: selectedEmission,
             userId: widget.userId,
+            userRole: widget.userRole,
           ),
         ),
       );

@@ -5,6 +5,7 @@ class Datapoint {
   final String date;
   final String? fileAttachment; // Optional file attachment
   final String status;
+  String rejectedReason;
 
   // Optional fields based on emission type
   final double? emissionCalculated; // Example: CO2 emission value
@@ -21,7 +22,7 @@ class Datapoint {
     required this.status,
     required this.emissionAmount,
     this.emissionCalculated,
-    this.emissionType,
+    this.emissionType, required this.rejectedReason,
   });
 
   // You can create a `toMap` method if needed for storing in Firebase
@@ -36,6 +37,8 @@ class Datapoint {
       'emissionAmount': emissionAmount,
       'emissionCalculated': emissionCalculated,
       'emissionType': emissionType,
+      'rejectedReason': rejectedReason,
+
     };
   }
 }

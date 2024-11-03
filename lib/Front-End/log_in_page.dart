@@ -1,6 +1,7 @@
 import 'package:climate_edge/Back-End/Controllers/user_controller.dart';
 import 'package:climate_edge/Front-End/Pages/DataProviderPages/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:climate_edge/Front-End/Pages/DataReviewerPages/home_page.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -10,7 +11,9 @@ class LoginPage extends StatelessWidget {
     // Get screen size information
     final size = MediaQuery.of(context).size;
     final isSmallScreen = size.width < 600;
-    final logoSize = isSmallScreen ? size.width * 0.4 : size.width * 0.2; // Logo scales with screen width
+    final logoSize = isSmallScreen
+        ? size.width * 0.4
+        : size.width * 0.2; // Logo scales with screen width
 
     // Define controllers for email and password
     final TextEditingController emailController = TextEditingController();
@@ -121,23 +124,38 @@ class LoginPage extends StatelessWidget {
                         // Get email and password values
                         String email = emailController.text.trim();
                         String password = passwordController.text.trim();
-                        
+
                         // Call signInWithEmailPassword function from AuthService
-                        var user = await AuthService().signInWithEmailPassword(context, email, password);
+                        var user = await AuthService()
+                            .signInWithEmailPassword(context, email, password);
                         if (user != null) {
                           // Successfully signed in, navigate or show success message
-                          Navigator.pushReplacement(
-                            // ignore: use_build_context_synchronously
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DataProviderHomePage(userId: user.id,),
-                            ),
-                          );
+                          if (user.role == ("dataProvider")) {
+                            Navigator.pushReplacement(
+                              // ignore: use_build_context_synchronously
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DataProviderHomePage(
+                                    userId: user.id, userRole: user.role),
+                              ),
+                            );
+                          } else {
+                            if (user.role == ("dataViewer")) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => HomePageReviewer(
+                                      userId: user.id, userRole: user.role),
+                                ),
+                              );
+                            }
+                          }
                         } else {
                           // Handle sign-in error (show a message, etc.)
                           // ignore: use_build_context_synchronously
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Invalid email or password')),
+                            const SnackBar(
+                                content: Text('Invalid email or password')),
                           );
                         }
                       },
@@ -146,7 +164,8 @@ class LoginPage extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 50, vertical: 15),
                       ),
                       child: const Text(
                         'Log In',
