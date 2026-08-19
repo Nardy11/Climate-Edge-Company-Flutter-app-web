@@ -1,16 +1,50 @@
-# climate_edge
+# Climate Edge
 
-A new Flutter project.
+[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter&logoColor=white)](https://flutter.dev/)
+[![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?logo=dart&logoColor=white)](https://dart.dev/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-## Getting Started
+A cross-platform Flutter application for Climate Edge, integrating Firebase for authentication and data, with document handling for company files.
 
-This project is a starting point for a Flutter application.
+## Features
 
-A few resources to get you started if this is your first Flutter project:
+- **Firebase Authentication** — user sign-in and account management
+- **Cloud Firestore** — real-time application data
+- **Firebase Storage** — company file/document storage
+- **File picking** (`file_picker`) — upload documents from device
+- **PDF viewing** (`flutter_pdfview`) — view documents in-app
+- **File downloads** (`flutter_downloader`, `dio`) — download stored files to device
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Technology
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Flutter & Dart
+- Firebase (Auth, Firestore, Storage)
+- Cross-platform targets: Android, iOS, web, Windows, macOS, Linux
+
+## Run locally
+
+1. Install [Flutter](https://docs.flutter.dev/get-started/install).
+2. Clone the repository:
+   ```bash
+   git clone https://github.com/Nardy11/Climate-Edge-Company-Flutter-app-web.git
+   cd Climate-Edge-Company-Flutter-app-web
+   ```
+3. Install dependencies:
+   ```bash
+   flutter pub get
+   ```
+4. Configure a Firebase project for your target platform(s) (`flutterfire configure`).
+5. Run the application:
+   ```bash
+   flutter run
+   ```
+
+## Project structure
+
+- `lib/` — application source (screens, services, Firebase integration)
+- `assets/` — images used by the app
+- `test/` — Flutter test directory
+
+## License
+
+MIT — see [LICENSE](./LICENSE).
